@@ -11,8 +11,8 @@ const double _kPickerItemHeight = 40.0;
 
 const List<int> leapYearMonths = const <int>[1, 3, 5, 7, 8, 10, 12];
 
-class DatePicker {
-  static void showDatePicker(
+class LocationPicker {
+  static void showPicker(
     BuildContext context, {
       bool showTitleActions: true,
       initialProvince: '上海市',
@@ -23,7 +23,7 @@ class DatePicker {
     }) {
     Navigator.push(
       context,
-      new _DatePickerRoute(
+      new _PickerRoute(
         showTitleActions: showTitleActions,
         initialProvince: initialProvince,
         initialCity: initialCity,
@@ -37,8 +37,8 @@ class DatePicker {
   }
 }
 
-class _DatePickerRoute<T> extends PopupRoute<T> {
-  _DatePickerRoute({
+class _PickerRoute<T> extends PopupRoute<T> {
+  _PickerRoute({
     this.showTitleActions,
     this.initialProvince,
     this.initialCity,
@@ -113,7 +113,7 @@ class _PickerComponent extends StatefulWidget {
 
   final String initialProvince, initialCity, initialTown;
   final DateChangedCallback onChanged;
-  final _DatePickerRoute route;
+  final _PickerRoute route;
 
   @override
   State<StatefulWidget> createState() => _PickerState(
@@ -129,6 +129,8 @@ class _PickerState extends State<_PickerComponent> {
   var towns = [];
   var provinces = [];
 
+  bool hasTown = true;
+
   AnimationController controller;
   Animation<double> animation;
 
@@ -136,7 +138,7 @@ class _PickerState extends State<_PickerComponent> {
 
   _PickerState(this._currentProvince, this._currentCity, this._currentTown) {
     provinces = Locations.provinces;
-    print('widget  p $_currentProvince, $_currentCity, $_currentTown');
+    hasTown = this._currentTown != null;
 
     _init();
   }
@@ -179,10 +181,12 @@ class _PickerState extends State<_PickerComponent> {
       cindex = cindex >= 0 ? cindex : 0;
       _currentCity = cities[cindex]['name'];
 
-      towns = Locations.getTowns(_currentCity, cities);
-      tindex = towns.indexWhere((t) => t.indexOf(_currentTown) >=0) ?? 0;
-      tindex = tindex >= 0 ? tindex : 0;
-      _currentTown = towns[tindex];
+      if (hasTown) {
+        towns = Locations.getTowns(_currentCity, cities);
+        tindex = towns.indexWhere((t) => t.indexOf(_currentTown) >=0) ?? 0;
+        tindex = tindex >= 0 ? tindex : 0;
+        _currentTown = towns[tindex];
+      }
     }
 
     provinceScrollCtrl = new FixedExtentScrollController(initialItem: pindex);
@@ -198,9 +202,11 @@ class _PickerState extends State<_PickerComponent> {
 
         cities = Locations.getCities(selectedProvince);
         _currentCity = cities[0]['name'];
-        towns = Locations.getTowns(cities[0]['name'], cities);
 
-        _currentTown = towns[0];
+        if (hasTown) {
+          towns = Locations.getTowns(cities[0]['name'], cities);
+          _currentTown = towns[0];
+        }
       });
 
       _notifyLocationChanged();
@@ -234,14 +240,15 @@ class _PickerState extends State<_PickerComponent> {
   }
 
   double _pickerFontSize(String text) {
+    double ratio = hasTown ? 0.0 : 2.0;
     if (text == null || text.length <= 6) {
       return 18.0;
     } else if (text.length < 9){
-      return 16.0;
+      return 16.0 + ratio;
     } else if (text.length < 13){
-      return 12.0;
+      return 12.0 + ratio;
     } else {
-      return 10.0;
+      return 10.0 + ratio;
     }
   }
 
@@ -326,36 +333,38 @@ class _PickerState extends State<_PickerComponent> {
             )),
         ),
 
-        Expanded(
-          flex: 1,
-          child: Container(
-            padding: EdgeInsets.all(8.0),
-            height: _kPickerHeight,
-            decoration: BoxDecoration(color: Colors.white),
-            child: CupertinoPicker(
-              backgroundColor: Colors.white,
-              scrollController: townScrollCtrl,
-              itemExtent: _kPickerItemHeight,
-              onSelectedItemChanged: (int index) {
-                _setTown(index);
-              },
-              children: List.generate(towns.length, (int index) {
-                String text = towns[index];
-                return Container(
-                  height: _kPickerItemHeight,
-                  alignment: Alignment.center,
-                  child: Text(
-                    "${text}",
-                    style: TextStyle(
-                      color: Color(0xFF000046),
-                      fontSize: _pickerFontSize(text)
+        hasTown
+        ? Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              height: _kPickerHeight,
+              decoration: BoxDecoration(color: Colors.white),
+              child: CupertinoPicker(
+                backgroundColor: Colors.white,
+                scrollController: townScrollCtrl,
+                itemExtent: _kPickerItemHeight,
+                onSelectedItemChanged: (int index) {
+                  _setTown(index);
+                },
+                children: List.generate(towns.length, (int index) {
+                  String text = towns[index];
+                  return Container(
+                    height: _kPickerItemHeight,
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${text}",
+                      style: TextStyle(
+                        color: Color(0xFF000046),
+                        fontSize: _pickerFontSize(text)
+                      ),
+                      textAlign: TextAlign.start,
                     ),
-                    textAlign: TextAlign.start,
-                  ),
-                );
-              }),
-            )),
-        ),
+                  );
+                }),
+              )),
+            )
+        : Center()
       ],
     );
   }
