@@ -15,7 +15,7 @@ class App extends StatelessWidget {
         child: RaisedButton(
           child: Center(
             child: Text(
-              'Click me!',
+              'Pick location!',
               style: TextStyle(
                 fontSize: 24.0
               ),
@@ -27,7 +27,7 @@ class App extends StatelessWidget {
               showTitleActions: true,
               initialProvince: '上海',
               initialCity: '上海',
-              initialTown: null,
+              initialTown: '',
               onChanged: (p, c, t) {
                 print('$p $c $t');
               },
