@@ -51,7 +51,7 @@ LocationPicker.showPicker(
 
 ```
 
-[Example sources](./example/locations.gif)
+![Example sources](./example/locations.gif)
 
 
 ### `initialTown: null` 只选择省市
@@ -75,7 +75,7 @@ LocationPicker.showPicker(
 
 ```
 
-[Example sources](./example/locations-without-town.gif)
+![Example sources](./example/locations-without-town.gif)
 
 
 # License
