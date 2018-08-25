@@ -3489,22 +3489,22 @@ const locations = [
         'areaList': [
           '中西区',
           '东区',
-          ' 九龙城区',
-          ' 观塘区',
+          '九龙城区',
+          '观塘区',
           '南区',
           '深水埗区',
           '黄大仙区',
           '湾仔区',
           '油尖旺区',
           '离岛区',
-          ' 葵青区',
+          '葵青区',
           '北区',
           '西贡区',
           '沙田区',
           '屯门区',
           '大埔区',
           '荃湾区',
-          ' 元朗区'
+          '元朗区'
         ]
       }
     ]
@@ -3534,7 +3534,7 @@ class Locations {
   static getCities(String province) {
     var cities = locations.where((f) => f['name'] == province).toList();
     cities = cities[0]['cityList'];
-    if (cities == null || cities.length == 0 || cities[0]['name'] == null) {
+    if (cities == null || cities.length <= 1 || cities[0]['name'] == null) {
       return [{
         'name': province,
         'areaList': cities[0]['areaList']

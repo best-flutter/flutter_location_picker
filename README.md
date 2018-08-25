@@ -9,7 +9,7 @@ Depend
 
 ```yaml
 dependencies:
-  flutter_location_picker: ^0.0.5
+  flutter_location_picker: ^0.0.6
 ```
 
 Install

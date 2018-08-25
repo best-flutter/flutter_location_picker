@@ -175,13 +175,13 @@ class _PickerState extends State<_PickerComponent> {
       _currentProvince = selectedProvince;
 
       cities = Locations.getCities(selectedProvince);
-      cindex = cities.indexWhere((c) => c['name'].indexOf(_currentCity) >= 0);
-      cindex = cindex >= 0 ? cindex : 0;
-      _currentCity = cities[cindex]['name'];
-      if (!hasTown && _currentCity == selectedProvince) {
+      if (!hasTown && cities.length == 1) {
         //不显示县城的时候 直辖市显示 areaList
         cities = cities[0]['areaList'].map((c) => {'name': c}).toList();
       }
+      cindex = cities.indexWhere((c) => c['name'].indexOf(_currentCity) >= 0);
+      cindex = cindex >= 0 ? cindex : 0;
+      _currentCity = cities[cindex]['name'];
 
       if (hasTown) {
         towns = Locations.getTowns(_currentCity, cities);
@@ -203,15 +203,16 @@ class _PickerState extends State<_PickerComponent> {
         _currentProvince = selectedProvince;
 
         cities = Locations.getCities(selectedProvince);
-        _currentCity = cities[0]['name'];
-        if (!hasTown && _currentCity == selectedProvince) {
+        if (!hasTown && cities.length == 1) {
           //不显示县城的时候 直辖市显示 areaList
           cities = cities[0]['areaList'].map((c) => {'name': c}).toList();
         }
-
+        _currentCity = cities[0]['name'];
+        cityScrollCtrl.jumpToItem(0);
         if (hasTown) {
           towns = Locations.getTowns(cities[0]['name'], cities);
           _currentTown = towns[0];
+          townScrollCtrl.jumpToItem(0);
         }
       });
 
@@ -220,11 +221,15 @@ class _PickerState extends State<_PickerComponent> {
   }
 
   void _setCity(int index) {
+    index = cities.length > index ? index : cities.length - 1;
     String selectedCity = cities[index]['name'];
     if (_currentCity != selectedCity) {
-      setState(() {
-        towns = Locations.getTowns(selectedCity, cities);
-      });
+      if (hasTown) {
+        setState(() {
+          towns = Locations.getTowns(selectedCity, cities);
+          townScrollCtrl.jumpToItem(0);
+        });
+      }
       _currentCity = selectedCity;
       _notifyLocationChanged();
     }
@@ -323,7 +328,7 @@ class _PickerState extends State<_PickerComponent> {
                     height: _kPickerItemHeight,
                     alignment: Alignment.center,
                     child: Text(
-                      '${text}',
+                      '$text',
                       style: TextStyle(
                           color: Color(0xFF000046),
                           fontSize: _pickerFontSize(text)),
