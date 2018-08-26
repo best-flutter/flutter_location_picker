@@ -9,8 +9,6 @@ const double _kPickerHeight = 220.0;
 const double _kPickerTitleHeight = 44.0;
 const double _kPickerItemHeight = 40.0;
 
-const List<int> leapYearMonths = const <int>[1, 3, 5, 7, 8, 10, 12];
-
 class LocationPicker {
   static void showPicker(
     BuildContext context, {
